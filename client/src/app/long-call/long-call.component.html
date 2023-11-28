@@ -1,0 +1,23 @@
+<a routerLink="/" class="btn btn-dark">Demo Home</a>
+<div class="form-group"></div>
+<h2>Long-Running Call With Polling</h2>
+<div>
+  <button class="btn btn-primary" [disabled]="!input.valid || taskStatus === 'submitted' || taskStatus === 'pending'"
+    (click)="onSubmit()">Submit</button>
+  <p></p>
+  <button class="btn btn-primary" [disabled]="taskStatus === 'submitted' || taskStatus === 'pending'"
+    (click)="onPollBadId()">Poll (Invalid ID)</button>
+  <p></p>
+  <label for="timeout">Enter timeout (between 1 and 10) in seconds:</label>
+  <div class="divider"></div>
+  <input #input="ngModel" pattern="^([1-9]?|10)$" required=true [(ngModel)]="timeout">
+  <h2>Results from Server</h2>
+  <p *ngIf="urlPath?.length > 0"><b>URL Path:       </b><i>{{urlPath}}</i></p>
+  <p *ngIf="taskId?.length > 0"><b>Task ID:         </b><i>{{taskId}}</i></p>
+  <p *ngIf="taskStatus?.length > 0"><b>Task Status: </b><i>{{(taskStatus | uppercase) + progress}}</i></p>
+  <p *ngIf="httpStatusCode > 0"><b>HTTP Status:     </b><i>{{httpStatusCode}}</i></p>
+  <div *ngIf="body?.length > 0">
+    <b>Response from server is </b>
+    <b *ngFor="let item of body">{{item}} </b>
+  </div>
+</div>

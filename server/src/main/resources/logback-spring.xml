@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <property name="LOGFILE_PATH" value="./logs"/>
+    <property name="LOGFILE_NAME" value="framework-demo"/>
+    <appender name="RollingFile"
+        class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGFILE_PATH}/${LOGFILE_NAME}.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+        </encoder>
+        <rollingPolicy
+            class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--Roll over daily, and/or when the file reaches 10MB -->
+            <fileNamePattern>${LOGS}/archived/${LOGFILE_NAME}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+     
+    <!-- LOG everything at INFO level -->
+    <root level="info">
+        <appender-ref ref="RollingFile" />
+        <appender-ref ref="CONSOLE"/>
+    </root>
+ 
+    <!-- LOG "com.dchampion" at TRACE level -->
+    <logger name="com.dchampion" level="trace" additivity="false">
+        <appender-ref ref="RollingFile" />
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+ </configuration>

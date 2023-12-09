@@ -1,68 +1,118 @@
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById("button").innerHTML = "Loaded"
-})
+    const divButtons = document.getElementsByClassName('div-button');
+    Array.from(divButtons).forEach(button => {
+        button.onclick = function() {
+            showDiv(this.dataset.div);
+        }
+    });
 
-function submit() {
+    const submitButton = document.getElementById('long-call-submit-button');
+    submitButton.onclick = function() {
+        submit(document.getElementById('long-call-timeout').value);
+    }
 
+    const regForm = document.getElementById('reg-auth-registration-form');
+    regForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const form = e.currentTarget;
+        const url = form.action;
+
+        try {
+            const formData = new FormData(form);
+
+            const responseData = await postFormFieldsAsJson({ url, formData });
+            document.getElementById('reg-auth-response-container').innerHTML = responseData;
+        } catch (error) {
+            document.getElementById('reg-auth-response-container').innerHTML = error;
+        }
+    })
+});
+
+async function postFormFieldsAsJson({ url, formData }) {
+    //Create an object from the form data entries
+    let formDataObject = Object.fromEntries(formData.entries());
+    // Format the plain form data as JSON
+    let formDataJsonString = JSON.stringify(formDataObject);
+
+    //Set the fetch options (headers, body)
+    let options = {
+        //HTTP method set to POST.
+        method: 'POST',
+        //Set the headers that specify you're sending a JSON body request and accepting JSON response
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        // POST request body as JSON string.
+        body: formDataJsonString,
+    };
+
+    //Get the response body as JSON.
+    //If the response was not OK, throw an error.
+    const res = await fetch(url, options);
+
+    //If the response is not ok throw an error (for debugging)
+    if (!res.ok) {
+        let error = await res.text();
+        throw new Error(error);
+    }
+    //If the response was OK, return the response body.
+    return res.text();
 }
 
-function startPolling() {
-  var endpointUrl = 'http://localhost:8080/long-call/submit';
-  var endpointUrlPoll = 'http://localhost:8080/long-call/poll/'
-  var interval = 1000; // Time interval between requests in milliseconds (1 second in this example)
-
-  // Function to update the response container
-  function updateResponse(response) {
-      document.getElementById('responseContainer').innerHTML = 'Response Body: ' + JSON.stringify(response);
-  }
-
-  // Function to update the UI while polling
-  function updateUIPending() {
-      document.getElementById('responseContainer').innerHTML = 'Waiting for response...';
-  }
-
-  function makeRequest(method) {
-      var xhr = new XMLHttpRequest();
-
-      xhr.onreadystatechange = function () {
-          if (xhr.readyState === XMLHttpRequest.DONE) {
-              if (xhr.status === 200) {
-                  var response = JSON.parse(xhr.responseText);
-
-                  // Check if the response contains a body
-                  if (response.body) {
-                      console.log('Response with body received:', response);
-                      // Update the UI with the response
-                      updateResponse(response);
-                  } else {
-                      // Continue polling after the specified interval with GET requests
-                      updateUIPending();
-                      setTimeout(function () {
-                          makeRequest('GET');
-                      }, interval);
-                  }
-              } else {
-                  console.error('Error:', xhr.status);
-                  // Handle error if needed
-              }
-          }
-      };
-
-      var url = (method === 'POST') ? endpointUrl : endpointUrlPoll;  // Adjust the URL based on the request method
-      xhr.open(method, url, true);
-
-      // Set the Content-Type header for the POST request
-      if (method === 'POST') {
-          xhr.setRequestHeader('Content-Type', 'application/json');
-          // Modify the payload as needed for your POST request
-          var payload = JSON.stringify({"timeout":10});
-          xhr.send(payload);
-      } else {
-          xhr.send();
-      }
-  }
-
-  // Start polling with an initial POST request
-  updateUIPending();
-  makeRequest('POST');
+function showDiv(div) {
+    Array.from(document.getElementsByClassName('top')).forEach(div => {
+        div.style.display = 'none';
+    })
+    document.querySelector(`#${div}`).style.display = 'block';
 }
+
+function submit(value) {
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+    if (value) {
+        options['body'] = `{"timeout":${value}}`;
+    }
+
+    fetch('http://localhost:8080/long-call/submit', options)
+    .then((response) => {
+        if (202 !== response.status) {
+            throw new Error(`HTTP error on submit! Status code: ${response.status}`);
+        }
+        poll(response.headers.get('task-id'), 1);
+    }).catch((error) => {
+        document.getElementById('long-call-response-container').innerHTML = error;
+    });
+}
+
+function poll(task_id, count) {
+    fetch(`http://localhost:8080/long-call/poll/${task_id}`, {method: 'GET'})
+    .then((response) => {
+        if (200 !== response.status) {
+            task_status = response.headers.get('task-status');
+            throw new Error(`HTTP error on poll! Status: ${response.status}; Task status: ${task_status}`);
+        }
+        task_status = response.headers.get('task-status');
+        if ('pending' === task_status) {
+            document.getElementById('long-call-response-container').innerHTML = `Polling ${count++} time(s)`
+            sleep(2000).then(() => {poll(task_id, count)});
+        } else if ('complete' === task_status) {
+            response.json().then((value) => {
+                document.getElementById('long-call-response-container').innerHTML = 'Got a response: ' + value;
+            });
+        } else {
+            throw new Error(`HTTP error on poll! Status: ${response.status}; Task status: ${task_status}`)
+        }
+    }).catch((error) => {
+        document.getElementById('long-call-response-container').innerHTML = error;
+    });
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+

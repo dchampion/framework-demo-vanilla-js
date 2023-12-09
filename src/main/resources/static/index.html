@@ -1,12 +1,42 @@
 <!DOCTYPE HTML>
 <html lang="en">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Framework Demo Vanilla Javascript</title>
+    <title>Framework Demo</title>
     <script src="site.js"></script>
+    <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <h1>Long-Call (reloaded)</h1>
-    <button id="submit" name="Hello"></button>
+    <h1>Framework Demo</h1>
+    <button class="div-button" data-div="long-call">Long call with polling</button>
+    <button class="div-button" data-div="reg-auth">User registration/authentication</button>
+    <div class="top" id="long-call">
+      <h1>Long call with polling</h1>
+      <button id="long-call-submit-button">Submit</button>
+      <p>
+        <input id="long-call-timeout" type="text" style="width:250px" placeholder="Enter timeout in seconds (optional)"></input>
+      </p>
+      <div id="long-call-response-container"></div>
+    </div>
+    <div class="top" id="reg-auth">
+      <h1>User registration/authentication</h1>
+      <form id="reg-auth-registration-form" action="/users/register" method="post">
+        <div>
+          <label for="fname">First name:</label><br>
+          <input type="text" id="fname" name="firstName"><br>
+          <label for="lname">Last name:</label><br>
+          <input type="text" id="lname" name="lastName"><br>
+          <label for="uname">Username:</label><br>
+          <input type="text" id="uname" name="username"><br>
+          <label for="password">Password:</label><br>
+          <input type="password" id="password" name="password"><br>
+          <label for="confirm-password">Confirm password:</label><br>
+          <input type="password" id="confirmPassword" name="confirmPassword">
+        </div>
+        <div>
+          <button type="submit">Register</button>
+        </div>
+      </form>
+      <div id="reg-auth-response-container"></div>
+    </div>
   </body>
 </html>

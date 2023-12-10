@@ -1,3 +1,5 @@
+let leakedMsg = '';
+
 document.addEventListener('DOMContentLoaded', () => {
     const topDivButtons = document.getElementsByClassName('div-button');
     Array.from(topDivButtons).forEach(button => {
@@ -13,40 +15,51 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 
-    const submitButton = document.getElementById('long-call-submit-button');
-    submitButton.onclick = function() {
+    document.getElementById('long-call-submit-button').onclick = function() {
         submit(document.getElementById('long-call-timeout').value);
     }
 
-    const regForm = document.getElementById('reg-auth-registration-form');
-    regForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const form = e.currentTarget;
-        const url = form.action;
-        const formData = new FormData(form);
-        const responseData = await postFormFieldsAsJson({ url, formData });
-        responseContainer = document.getElementById('reg-auth-response-container');
-        responseContainer.innerHTML = await responseData.text();
+    document.getElementById('reg-auth-registration-form').addEventListener("submit", async (e) => {
+        const responseContainer = document.getElementById('reg-auth-response-container');
+        if (leakedMsg.length > 0) {
+            e.preventDefault();
+            responseContainer.innerHTML = leakedMsg;
+            leakedMsg = '';
+        } else {
+            const response = await fetchResponse(e);
+            responseContainer.innerHTML = await response.text();
+        }
     });
 
-    const loginForm = document.getElementById('reg-auth-login-form');
-    loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const form = e.currentTarget;
-        const url = form.action;
-        const formData = new FormData(form);
-        const response = await postFormFieldsAsJson({ url, formData });
-        let str;
+    document.getElementById('reg-auth-login-form').addEventListener("submit", async (e) => {
+        const responseContainer = document.getElementById('login-response-container');
+        const response = await fetchResponse(e);
         if (!response.ok) {
-            str = await response.text();
+            responseContainer.innerHTML = await response.text();
         } else {
-            str = await response.json();
-            str = `Hello, ${str['username']}`;
+            let asJson = await response.json();
+            responseContainer.innerHTML =
+                `Hello, ${asJson['firstName']} ${asJson['lastName']}; you are logged in as ${asJson['username']}`;
         }
-        responseContainer = document.getElementById('login-response-container');
-        responseContainer.innerHTML = str;
+    })
+
+    document.getElementById('reg-password').addEventListener("focusout", async (event) => {
+        const options = {
+            method: 'POST',
+            body: event.currentTarget.value
+        }
+        response = await fetch('http://localhost:8080/users/is-pw-leaked', options);
+        leakedMsg = await response.text();
     })
 });
+
+async function fetchResponse(e) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const url = form.action;
+    const formData = new FormData(form);
+    return await postFormFieldsAsJson({ url, formData });
+}
 
 async function postFormFieldsAsJson({ url, formData }) {
     //Create an object from the form data entries

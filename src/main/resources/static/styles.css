@@ -2,7 +2,13 @@
 .top {
   display: none;
 }
+.reg-auth-top {
+  display: none;
+}
 #long-call {
+  display: block;
+}
+#reg-auth-login {
   display: block;
 }
 h1 {

@@ -1,10 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const divButtons = document.getElementsByClassName('div-button');
-    Array.from(divButtons).forEach(button => {
+    const topDivButtons = document.getElementsByClassName('div-button');
+    Array.from(topDivButtons).forEach(button => {
         button.onclick = function() {
-            showDiv(this.dataset.div);
+            showDiv(this.dataset.div, 'top');
         }
     });
+
+    const regAuthDivButtons = document.getElementsByClassName('reg-auth-div-button');
+    Array.from(regAuthDivButtons).forEach(button => {
+        button.onclick = function() {
+            showDiv(this.dataset.div, 'reg-auth-top');
+        }
+    })
 
     const submitButton = document.getElementById('long-call-submit-button');
     submitButton.onclick = function() {
@@ -14,29 +21,41 @@ document.addEventListener('DOMContentLoaded', () => {
     const regForm = document.getElementById('reg-auth-registration-form');
     regForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-
         const form = e.currentTarget;
         const url = form.action;
+        const formData = new FormData(form);
+        const responseData = await postFormFieldsAsJson({ url, formData });
+        responseContainer = document.getElementById('reg-auth-response-container');
+        responseContainer.innerHTML = await responseData.text();
+    });
 
-        try {
-            const formData = new FormData(form);
-
-            const responseData = await postFormFieldsAsJson({ url, formData });
-            document.getElementById('reg-auth-response-container').innerHTML = responseData;
-        } catch (error) {
-            document.getElementById('reg-auth-response-container').innerHTML = error;
+    const loginForm = document.getElementById('reg-auth-login-form');
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.currentTarget;
+        const url = form.action;
+        const formData = new FormData(form);
+        const response = await postFormFieldsAsJson({ url, formData });
+        let str;
+        if (!response.ok) {
+            str = await response.text();
+        } else {
+            str = await response.json();
+            str = `Hello, ${str['username']}`;
         }
+        responseContainer = document.getElementById('login-response-container');
+        responseContainer.innerHTML = str;
     })
 });
 
 async function postFormFieldsAsJson({ url, formData }) {
     //Create an object from the form data entries
-    let formDataObject = Object.fromEntries(formData.entries());
+    const formDataObject = Object.fromEntries(formData.entries());
     // Format the plain form data as JSON
-    let formDataJsonString = JSON.stringify(formDataObject);
+    const formDataJsonString = JSON.stringify(formDataObject);
 
     //Set the fetch options (headers, body)
-    let options = {
+    const options = {
         //HTTP method set to POST.
         method: 'POST',
         //Set the headers that specify you're sending a JSON body request and accepting JSON response
@@ -47,22 +66,15 @@ async function postFormFieldsAsJson({ url, formData }) {
         body: formDataJsonString,
     };
 
-    //Get the response body as JSON.
-    //If the response was not OK, throw an error.
-    const res = await fetch(url, options);
-
-    //If the response is not ok throw an error (for debugging)
-    if (!res.ok) {
-        let error = await res.text();
-        throw new Error(error);
-    }
-    //If the response was OK, return the response body.
-    return res.text();
+    return await fetch(url, options);
 }
 
-function showDiv(div) {
-    Array.from(document.getElementsByClassName('top')).forEach(div => {
+function showDiv(div, className) {
+    Array.from(document.getElementsByClassName(className)).forEach(div => {
         div.style.display = 'none';
+    })
+    Array.from(document.getElementsByClassName('response-container')).forEach(div => {
+        div.innerHTML = '';
     })
     document.querySelector(`#${div}`).style.display = 'block';
 }

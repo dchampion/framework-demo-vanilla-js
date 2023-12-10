@@ -15,28 +15,46 @@
       <p>
         <input id="long-call-timeout" type="text" style="width:250px" placeholder="Enter timeout in seconds (optional)"></input>
       </p>
-      <div id="long-call-response-container"></div>
+      <div class="response-container" id="long-call-response-container"></div>
     </div>
     <div class="top" id="reg-auth">
       <h1>User registration/authentication</h1>
-      <form id="reg-auth-registration-form" action="/users/register" method="post">
-        <div>
-          <label for="fname">First name:</label><br>
-          <input type="text" id="fname" name="firstName"><br>
-          <label for="lname">Last name:</label><br>
-          <input type="text" id="lname" name="lastName"><br>
-          <label for="uname">Username:</label><br>
-          <input type="text" id="uname" name="username"><br>
-          <label for="password">Password:</label><br>
-          <input type="password" id="password" name="password"><br>
-          <label for="confirm-password">Confirm password:</label><br>
-          <input type="password" id="confirmPassword" name="confirmPassword">
+      <button class="reg-auth-div-button" data-div="reg-auth-login">Log in</button>
+      <button class="reg-auth-div-button" data-div="reg-auth-register">Register</button>
+      <div class="reg-auth-top" id="reg-auth-login">
+          <form id="reg-auth-login-form" action="/users/authenticate" method="post">
+            <div>
+              <label for="uname">Username:</label><br>
+              <input type="text" id="uname" name="username"><br>
+              <label for="password">Password:</label><br>
+              <input type="password" id="password" name="password"><br>
+            </div>
+            <div>
+              <button type="submit">Submit</button>
+            </div>
+            <div class="response-container" id="login-response-container"></div>
+          </form>
         </div>
-        <div>
-          <button type="submit">Register</button>
+        <div class="reg-auth-top" id="reg-auth-register">
+          <form id="reg-auth-registration-form" action="/users/register" method="post">
+            <div>
+              <label for="fname">First name:</label><br>
+              <input type="text" id="fname" name="firstName"><br>
+              <label for="lname">Last name:</label><br>
+              <input type="text" id="lname" name="lastName"><br>
+              <label for="uname">Username:</label><br>
+              <input type="text" id="uname" name="username"><br>
+              <label for="password">Password:</label><br>
+              <input type="password" id="password" name="password"><br>
+              <label for="confirm-password">Confirm password:</label><br>
+              <input type="password" id="confirmPassword" name="confirmPassword">
+            </div>
+            <div>
+              <button type="submit">Submit</button>
+            </div>
+          </form>
         </div>
-      </form>
-      <div id="reg-auth-response-container"></div>
+      <div class="response-container" id="reg-auth-response-container"></div>
     </div>
   </body>
 </html>

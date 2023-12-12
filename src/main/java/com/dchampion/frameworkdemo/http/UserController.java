@@ -41,8 +41,8 @@ public class UserController {
         "This password has previously appeared in a data breach. " +
         "Please choose a more secure alternative.";
 
-    private static final String invalidPassword =
-        "The password you typed is incorrect";
+    private static final String authFailed =
+        "Authentication failed; contact site administrator";
 
     private static final String registrationFailed =
         "Registration failed; contact site administrator";
@@ -81,10 +81,10 @@ public class UserController {
         if (userService.passwordLeaked(user.getPassword())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(passwordLeaked);
         }
-        if (userService.add(user)) {
-            return ResponseEntity.ok().body(registrationSuccessful);
+        if (!userService.add(user)) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(registrationFailed);
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(registrationFailed);
+        return ResponseEntity.ok().body(registrationSuccessful);
     }
 
     /**
@@ -104,13 +104,13 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(userDoesNotExist);
         }
         User user = userService.get(candidate.getUsername(), candidate.getPassword());
-        if (user != null) {
-            boolean leaked = userService.passwordLeaked(candidate.getPassword());
-            return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .header("Password-Leaked", Boolean.toString(leaked)).body(user);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(authFailed);
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(invalidPassword);
+        boolean leaked = userService.passwordLeaked(candidate.getPassword());
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header("Password-Leaked", Boolean.toString(leaked)).body(user);
     }
 
     /**

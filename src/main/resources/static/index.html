@@ -2,32 +2,77 @@
 <html lang="en">
   <head>
     <title>Framework Demo</title>
-    <script src="site.js"></script>
+    <script defer src="site.js"></script>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <h1>Framework Demo</h1>
-    <button class="div-button" data-div="long-call">Long call with polling</button>
-    <button class="div-button" data-div="reg-auth">User registration/authentication</button>
+    <h1>Web Application Framework Demo</h1>
+    <h3>
+      Select a tab below to demonstrate a feature.
+    </h3>
+    <button class="div-button" data-div="long-call">Long Call with Polling</button>
+    <button class="div-button" data-div="reg-auth">User Registration / Authentication</button>
     <div class="top" id="long-call">
-      <h1>Long call with polling</h1>
+      <h1>Long Call with Polling</h1>
+      <h3>
+        <p>
+          By pressing the submit button below, you will initiate a process on the server that will<br>
+          take 10 seconds to complete. The client (this browser) will poll the server at 2&ndash;second<br>
+          intervals, and will continue to poll until the server process is complete. Once the process<br>
+          is complete, the server will respond with a result, which will be displayed at the bottom of<br>
+          this window.
+        </p>
+        <p>
+          If you enter a timeout value less than 10, the server will respond that the process timed<br>
+          out before it could be completed, and the client will stop polling. Otherwise, if no timeout<br>
+          is entered, the default value of 60 seconds will be used, giving the server ample time to<br>
+          complete the request. (To better observe the interaction between client and server, use<br>
+          the network view in your browser's developer tools.)
+        <p>
+          To see what's going on in the data tier, log in to the <a target=_blank href="http://localhost:8080/h2-console">in-memory database</a>
+          (no password required).
+        </p>
+        <p>
+          To learn more about this feature, you can read about it at
+          <a target=_blank href="https://github.com/dchampion/framework/wiki/Web-Application-Framework#long-running-operation-with-polling">this link</a>.
+        </p>
+      </h3>
       <button id="long-call-submit-button">Submit</button>
       <p>
-        <input id="long-call-timeout" type="text" style="width:250px" placeholder="Enter timeout in seconds (optional)"></input>
+        <input id="long-call-timeout" type="number" min="1" style="width:250px" placeholder="Enter timeout in seconds (optional)"></input>
       </p>
       <div class="response-container" id="long-call-response-container"></div>
     </div>
     <div class="top" id="reg-auth">
-      <h1>User registration/authentication</h1>
+      <h1>User Registration and Authentication</h1>
+      <h3>
+        <p>
+          Submit a username and password to authenticate an existing user, or press the Register<br>
+          button to create a new one.
+        </p>
+        <p>
+          On registration of a new user, the server will reject a password proposal based on two<br>
+          criteria: First, the password must be at least 8 characters in length (and no more than<br>
+          64). Second, the password must not have previously appeared in a data breach.
+        </p>
+        <p>
+          To see what's going on in the data tier, log in to the <a target=_blank href="http://localhost:8080/h2-console">in-memory database</a>
+          (no password required).
+        </p>
+        <p>
+          To learn more about this feature, you can read about it at
+          <a target=_blank href="https://github.com/dchampion/framework/wiki/Web-Application-Framework#identity-and-access-management">this link</a>.
+        </p>
+      </h3>
       <button class="reg-auth-div-button" data-div="reg-auth-login">Log in</button>
       <button class="reg-auth-div-button" data-div="reg-auth-register">Register</button>
       <div class="reg-auth-top" id="reg-auth-login">
           <form id="reg-auth-login-form" action="/users/authenticate" method="post">
             <div>
-              <label for="uname">Username:</label><br>
-              <input type="text" id="uname" name="username"><br>
+              <label for="login-uname">Username:</label><br>
+              <input type="text" id="login-uname" name="username" required="true"><br>
               <label for="login-password">Password:</label><br>
-              <input type="password" id="login-password" name="password"><br>
+              <input type="password" id="login-password" name="password" required="true"><br>
             </div>
             <div>
               <button type="submit">Submit</button>
@@ -38,16 +83,16 @@
         <div class="reg-auth-top" id="reg-auth-register">
           <form id="reg-auth-registration-form" action="/users/register" method="post">
             <div>
-              <label for="fname">First name:</label><br>
-              <input type="text" id="fname" name="firstName"><br>
-              <label for="lname">Last name:</label><br>
-              <input type="text" id="lname" name="lastName"><br>
-              <label for="uname">Username:</label><br>
-              <input type="text" id="uname" name="username"><br>
+              <label for="reg-fname">First name:</label><br>
+              <input type="text" id="reg-fname" name="firstName" required="true"><br>
+              <label for="reg-lname">Last name:</label><br>
+              <input type="text" id="reg-lname" name="lastName" required="true"><br>
+              <label for="reg-uname">Username:</label><br>
+              <input type="text" id="reg-uname" name="username" required="true"><br>
               <label for="reg-password">Password:</label><br>
-              <input type="password" id="reg-password" name="password"><br>
-              <label for="confirm-password">Confirm password:</label><br>
-              <input type="password" id="confirmPassword" name="confirmPassword">
+              <input type="password" id="reg-password" name="password" required="true" minlength="8" maxlength="64"><br>
+              <label for="reg-confirm-password">Confirm password:</label><br>
+              <input type="password" id="reg-confirm-password" name="confirm-password" required="true" minlength="8" maxlength="64">
             </div>
             <div>
               <button type="submit">Submit</button>

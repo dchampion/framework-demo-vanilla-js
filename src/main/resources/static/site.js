@@ -1,56 +1,68 @@
 let leakedMsg = '';
 
-document.addEventListener('DOMContentLoaded', () => {
-    const topDivButtons = document.getElementsByClassName('div-button');
-    Array.from(topDivButtons).forEach(button => {
-        button.onclick = function() {
-            showDiv(this.dataset.div, 'top');
-        }
-    });
-
-    const regAuthDivButtons = document.getElementsByClassName('reg-auth-div-button');
-    Array.from(regAuthDivButtons).forEach(button => {
-        button.onclick = function() {
-            showDiv(this.dataset.div, 'reg-auth-top');
-        }
-    })
-
-    document.getElementById('long-call-submit-button').onclick = function() {
-        submit(document.getElementById('long-call-timeout').value);
+Array.from(document.getElementsByClassName('div-button')).forEach(button => {
+    button.onclick = function() {
+        showDiv(this.dataset.div, 'top');
     }
+});
 
-    document.getElementById('reg-auth-registration-form').addEventListener("submit", async (e) => {
-        const responseContainer = document.getElementById('reg-auth-response-container');
-        if (leakedMsg.length > 0) {
-            e.preventDefault();
-            responseContainer.innerHTML = leakedMsg;
-            leakedMsg = '';
-        } else {
-            const response = await fetchResponse(e);
-            responseContainer.innerHTML = await response.text();
-        }
-    });
+Array.from(document.getElementsByClassName('reg-auth-div-button')).forEach(button => {
+    button.onclick = function() {
+        showDiv(this.dataset.div, 'reg-auth-top');
+    }
+});
 
-    document.getElementById('reg-auth-login-form').addEventListener("submit", async (e) => {
-        const responseContainer = document.getElementById('login-response-container');
+document.getElementById('long-call-submit-button').onclick = function() {
+    submit(document.getElementById('long-call-timeout').value);
+};
+
+document.getElementById('reg-auth-registration-form').addEventListener("submit", async (e) => {
+    const responseContainer = document.getElementById('reg-auth-response-container');
+    let password = document.getElementById('reg-password').value;
+    let confirmPassword = document.getElementById('reg-confirm-password').value;
+    if (password !== confirmPassword) {
+        e.preventDefault();
+        responseContainer.innerHTML = "Passwords don't match";
+    } else if (leakedMsg.length > 0) {
+        e.preventDefault();
+        responseContainer.innerHTML = leakedMsg;
+        leakedMsg = '';
+    } else {
         const response = await fetchResponse(e);
-        if (!response.ok) {
-            responseContainer.innerHTML = await response.text();
-        } else {
-            let asJson = await response.json();
-            responseContainer.innerHTML =
-                `Hello, ${asJson['firstName']} ${asJson['lastName']}; you are logged in as ${asJson['username']}`;
-        }
-    })
+        responseContainer.innerHTML = await response.text();
+    }
+});
 
-    document.getElementById('reg-password').addEventListener("focusout", async (event) => {
-        const options = {
-            method: 'POST',
-            body: event.currentTarget.value
+document.getElementById('reg-password').addEventListener("focusout", async (event) => {
+    const options = {
+        method: 'POST',
+        body: event.currentTarget.value
+    }
+    response = await fetch('http://localhost:8080/users/is-pw-leaked', options);
+    leakedMsg = await response.text();
+});
+
+document.getElementById('reg-auth-login-form').addEventListener("submit", async (e) => {
+    const responseContainer = document.getElementById('login-response-container');
+    const response = await fetchResponse(e);
+    if (!response.ok) {
+        responseContainer.innerHTML = await response.text();
+    } else {
+        let asJson = await response.json();
+        let msg = `Hello, ${asJson['firstName']} ${asJson['lastName']}; you are logged in as ${asJson['username']}`
+        if (response.headers.get('Password-Leaked') === 'true') {
+            msg +=
+            '.<p><b>The password you are using on this site has previously<br>' +
+            'appeared in a data breach of another site. THIS IS NOT<br>' +
+            'RELATED TO A SECURITY INCIDENT ON THIS SITE.<br>' +
+            'However, the fact that this password has previously<br>' +
+            'appeared elsewhere puts this account at risk. You<br>' +
+            'should consider changing your password on this<br>' +
+            'site, as well as any other site on which you currently<br>' +
+            'use this password.</b>';
         }
-        response = await fetch('http://localhost:8080/users/is-pw-leaked', options);
-        leakedMsg = await response.text();
-    })
+        responseContainer.innerHTML = msg;
+    }
 });
 
 async function fetchResponse(e) {
@@ -105,35 +117,37 @@ function submit(value) {
 
     fetch('http://localhost:8080/long-call/submit', options)
     .then((response) => {
-        if (202 !== response.status) {
-            throw new Error(`HTTP error on submit! Status code: ${response.status}`);
+        if (!response.ok) {
+            task_status = response.headers.get('task-status');
+            throw new Error(`Status code: ${response.status}; Task status: ${task_status}`);
         }
+        document.getElementById('long-call-response-container').innerHTML = `Task submitted<br>`;
         poll(response.headers.get('task-id'), 1);
     }).catch((error) => {
-        document.getElementById('long-call-response-container').innerHTML = error;
+        document.getElementById('long-call-response-container').innerHTML += error;
     });
 }
 
 function poll(task_id, count) {
     fetch(`http://localhost:8080/long-call/poll/${task_id}`, {method: 'GET'})
     .then((response) => {
-        if (200 !== response.status) {
+        if (!response.ok) {
             task_status = response.headers.get('task-status');
-            throw new Error(`HTTP error on poll! Status: ${response.status}; Task status: ${task_status}`);
+            throw new Error(`Status code: ${response.status}; Task status: ${task_status}`);
         }
         task_status = response.headers.get('task-status');
         if ('pending' === task_status) {
-            document.getElementById('long-call-response-container').innerHTML = `Polling ${count++} time(s)`
+            document.getElementById('long-call-response-container').innerHTML += `Polling ${count++} time(s)<br>`;
             sleep(2000).then(() => {poll(task_id, count)});
         } else if ('complete' === task_status) {
             response.json().then((value) => {
-                document.getElementById('long-call-response-container').innerHTML = 'Got a response: ' + value;
+                document.getElementById('long-call-response-container').innerHTML += 'Got a response: ' + value;
             });
         } else {
-            throw new Error(`HTTP error on poll! Status: ${response.status}; Task status: ${task_status}`)
+            throw new Error(`Status code: ${response.status}; Task status: ${task_status}`)
         }
     }).catch((error) => {
-        document.getElementById('long-call-response-container').innerHTML = error;
+        document.getElementById('long-call-response-container').innerHTML += error;
     });
 }
 

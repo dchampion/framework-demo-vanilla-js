@@ -1,12 +1,13 @@
-# framework-demo
-The <i>framework-demo</i> project is designed to demonstrate the features of the <i>framework</i>; a Spring-based Java web application framework that is contained in a companion repo to this one.
+# framework-demo-vanilla-js
+This project is designed to showcase the features of [a Spring-based Java web application framework](https://github.com/dchampion/framework). To install and run _this_ project, consult _that_ project's [README](https://github.com/dchampion/framework/blob/master/README.md) (and check the [wiki](https://github.com/dchampion/framework/wiki/Web-Application-Framework) for a description of its features).
 
-For instructions on how to install and run the <i>framework-demo</i> contained in this repo, consult the README on the aforementioned <a href=https://github.com/dchampion/framework target="_blank"><i>framework</i> repo homepage</a>.
+## Why?
+This project (_framework&dash;demo&dash;vanilla&dash;js_) is the successor to [_framework&dash;demo_](https://github.com/dchampion/framework-demo). Whereas I used [Angular](https://en.wikipedia.org/wiki/JavaScript#Angular) to implement the frontend of framework&dash;demo, in this project I replaced the Angular frontend with one implemented in HTML, CSS and plain [vanilla JavaScript](https://en.wikipedia.org/wiki/JavaScript#Vanilla_JS) (JS).
 
-For a fuller description of the features of the <i>framework</i>, consult that repo's <a href=https://github.com/dchampion/framework/wiki/Web-Application-Framework target="_blank">wiki</a>.
+Why did I do this? First, Angular and its ilk (_React_, _Vue_, _Svelte_, _Express.js_, etc.) are _icebergs_; that is, just a tiny bit of functionality (the tip of the iceberg) comes at the cost of considerable baggage just beneath the surface.
 
-<b>Note: This project is a work in progress and should not be considered complete. Following is a list of unaddressed items:</b>
-1. Move authentication logic currently residing in <code>@RestController</code> classes into servlet filters using the Spring security framework. These classes were thrown together quickly to demonstrate integration of the <a href=https://haveibeenpwned.com/API><i>Have I Been Pwned API</i></a> into a browser-based identity registration and authentication system, and are polluted with logic that belongs in servlet filters.
+Second, I wanted to subject myself to a thorough introduction to the primitives of the JavaScript programming language, which I had only touched here and there during my career as a software engineer.
 
-2. Add a stateless, token-based authentication and authorization mechanism (likely based on the Spring framework as well).
+As for Angular et al. being icebergs, beneath their surfaces lurk hulking tangles of 3rd&dash;party dependencies and other sundry ornaments, most completely unrelated to the purpose of the software. Frameworks of this sort are an inelegant and grotesque waste of resources, and quickly become maintenance nightmares if not cared for constantly and meticulously. Adding insult to injury, they expose a massive attack surface to bad actors via the open&dash;source supply chain.
 
+As for the backend, regrettably it too is implemented using a framework; in this case the Java&dash;based [Spring framework](https://en.wikipedia.org/wiki/Spring_Framework). At best it is only slightly less deserving of the critiques I leveled at Angular. When I set about to rewrite the frontend in vanilla JS, I never imagined it would take me a week just to update the backend, nearly all of whose dependencies were riddled with security vulnerabilities discovered in the 18 months or so since I last visited the repo. Unfortunately, the backend is just too complex to rewrite from scratch using only Java primitives (I suppose it could be done, but I am not sufficiently motivated to do it).

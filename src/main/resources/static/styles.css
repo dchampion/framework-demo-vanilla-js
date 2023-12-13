@@ -1,16 +1,60 @@
 /* Global Styles */
+[class*="top-"] {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+  animation: fadeEffect 1s;
+}
+
+@keyframes fadeEffect {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
 .top {
   display: none;
 }
-.reg-auth-top {
-  display: none;
-}
+
 #long-call {
   display: block;
 }
+
 #reg-auth-login {
   display: block;
 }
+
+/* Style the tab */
+.tabs {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tabs button {
+  color: #369;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tabs button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tabs button.active {
+  background-color: #ccc;
+}
+
 h1 {
   color: #369;
   font-family: Arial, Helvetica, sans-serif;
@@ -21,6 +65,7 @@ h2, h3 {
   font-family: Arial, Helvetica, sans-serif;
   font-weight: lighter;
 }
+
 body {
   margin: 2em;
 }
@@ -32,8 +77,11 @@ a {
   cursor: pointer;
   cursor: hand;
 }
-button {
+
+.submit button {
+  color: #369;
   font-family: Arial;
+  font-weight: bold;
   background-color: #eee;
   border: none;
   padding: 5px 10px;
@@ -41,10 +89,10 @@ button {
   cursor: pointer;
   cursor: hand;
 }
-button:hover {
+.submit button:hover {
   background-color: #cfd8dc;
 }
-button:disabled {
+.submit button:disabled {
   background-color: #eee;
   color: #aaa;
   cursor: auto;

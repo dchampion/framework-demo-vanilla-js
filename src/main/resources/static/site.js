@@ -2,13 +2,27 @@ let leakedMsg = '';
 
 Array.from(document.getElementsByClassName('div-button')).forEach(button => {
     button.onclick = function() {
+        Array.from(document.getElementsByClassName('div-button')).forEach(button => {
+            button.className = button.className.replace(' active', '');
+        });
+        button.className += ' active';
         showDiv(this.dataset.div, 'top');
+    }
+    if (button.id === 'default-open') {
+        button.click();
     }
 });
 
 Array.from(document.getElementsByClassName('reg-auth-div-button')).forEach(button => {
     button.onclick = function() {
-        showDiv(this.dataset.div, 'reg-auth-top');
+        Array.from(document.getElementsByClassName('reg-auth-div-button')).forEach(button => {
+            button.className = button.className.replace(' active', '');
+        });
+        button.className += ' active';
+        showDiv(this.dataset.div, 'top-reg-auth');
+    }
+    if (button.id === 'default-open') {
+        button.click();
     }
 });
 
@@ -17,19 +31,18 @@ document.getElementById('long-call-submit-button').onclick = function() {
 };
 
 document.getElementById('reg-auth-registration-form').addEventListener("submit", async (e) => {
-    const responseContainer = document.getElementById('reg-auth-response-container');
-    let password = document.getElementById('reg-password').value;
-    let confirmPassword = document.getElementById('reg-confirm-password').value;
+    e.preventDefault();
+    const responseContainer = document.getElementById('reg-response-container');
+    const password = document.getElementById('reg-password').value;
+    const confirmPassword = document.getElementById('reg-confirm-password').value;
     if (password !== confirmPassword) {
-        e.preventDefault();
-        responseContainer.innerHTML = "Passwords don't match";
+        responseContainer.innerHTML = "<b>Passwords don't match</b>";
     } else if (leakedMsg.length > 0) {
-        e.preventDefault();
-        responseContainer.innerHTML = leakedMsg;
+        responseContainer.innerHTML = `<b>${leakedMsg}</b>`;
         leakedMsg = '';
     } else {
         const response = await fetchResponse(e);
-        responseContainer.innerHTML = await response.text();
+        responseContainer.innerHTML = `<b>${await response.text()}</b>`
     }
 });
 
@@ -43,30 +56,30 @@ document.getElementById('reg-password').addEventListener("focusout", async (even
 });
 
 document.getElementById('reg-auth-login-form').addEventListener("submit", async (e) => {
+    e.preventDefault();
     const responseContainer = document.getElementById('login-response-container');
     const response = await fetchResponse(e);
     if (!response.ok) {
-        responseContainer.innerHTML = await response.text();
+        responseContainer.innerHTML = `<b>${await response.text()}</b>`;
     } else {
         let asJson = await response.json();
         let msg = `Hello, ${asJson['firstName']} ${asJson['lastName']}; you are logged in as ${asJson['username']}`
         if (response.headers.get('Password-Leaked') === 'true') {
             msg +=
-            '.<p><b>The password you are using on this site has previously<br>' +
+            '.<p>The password you are using on this site has previously<br>' +
             'appeared in a data breach of another site. THIS IS NOT<br>' +
             'RELATED TO A SECURITY INCIDENT ON THIS SITE.<br>' +
             'However, the fact that this password has previously<br>' +
             'appeared elsewhere puts this account at risk. You<br>' +
             'should consider changing your password on this<br>' +
             'site, as well as any other site on which you currently<br>' +
-            'use this password.</b>';
+            'use this password.';
         }
-        responseContainer.innerHTML = msg;
+        responseContainer.innerHTML = `<b>${msg}</b>`;
     }
 });
 
 async function fetchResponse(e) {
-    e.preventDefault();
     const form = e.currentTarget;
     const url = form.action;
     const formData = new FormData(form);
@@ -101,6 +114,7 @@ function showDiv(div, className) {
     Array.from(document.getElementsByClassName('response-container')).forEach(div => {
         div.innerHTML = '';
     })
+    document.querySelectorAll('form').forEach(form => form.reset());
     document.querySelector(`#${div}`).style.display = 'block';
 }
 
@@ -121,10 +135,10 @@ function submit(value) {
             task_status = response.headers.get('task-status');
             throw new Error(`Status code: ${response.status}; Task status: ${task_status}`);
         }
-        document.getElementById('long-call-response-container').innerHTML = `Task submitted<br>`;
+        document.getElementById('long-call-response-container').innerHTML = `<b>Task submitted</b><br>`;
         poll(response.headers.get('task-id'), 1);
     }).catch((error) => {
-        document.getElementById('long-call-response-container').innerHTML += error;
+        document.getElementById('long-call-response-container').innerHTML += `<b>${error}</b>`;
     });
 }
 
@@ -137,21 +151,20 @@ function poll(task_id, count) {
         }
         task_status = response.headers.get('task-status');
         if ('pending' === task_status) {
-            document.getElementById('long-call-response-container').innerHTML += `Polling ${count++} time(s)<br>`;
+            document.getElementById('long-call-response-container').innerHTML += `<b>Polling ${count++} time(s)</b><br>`;
             sleep(2000).then(() => {poll(task_id, count)});
         } else if ('complete' === task_status) {
             response.json().then((value) => {
-                document.getElementById('long-call-response-container').innerHTML += 'Got a response: ' + value;
+                document.getElementById('long-call-response-container').innerHTML += '<b>Got a response: ' + value + '</b>';
             });
         } else {
             throw new Error(`Status code: ${response.status}; Task status: ${task_status}`)
         }
     }).catch((error) => {
-        document.getElementById('long-call-response-container').innerHTML += error;
+        document.getElementById('long-call-response-container').innerHTML += `<b>${error}</b>`;
     });
 }
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-

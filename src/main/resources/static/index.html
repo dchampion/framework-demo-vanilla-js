@@ -7,11 +7,13 @@
   </head>
   <body>
     <h1>Web Application Framework Demo</h1>
-    <h3>
-      Select a tab below to demonstrate a feature.
-    </h3>
-    <button class="div-button" data-div="long-call">Long Call with Polling</button>
-    <button class="div-button" data-div="reg-auth">User Registration / Authentication</button>
+    <h2>
+      Select a tab below to demonstrate a feature
+    </h2>
+    <div class="tabs">
+      <button class="div-button" id="default-open" data-div="long-call">Long Call with Polling</button>
+      <button class="div-button" data-div="reg-auth">User Registration / Authentication</button>
+    </div>
     <div class="top" id="long-call">
       <h1>Long Call with Polling</h1>
       <h3>
@@ -37,7 +39,9 @@
           <a target=_blank href="https://github.com/dchampion/framework/wiki/Web-Application-Framework#long-running-operation-with-polling">this link</a>.
         </p>
       </h3>
-      <button id="long-call-submit-button">Submit</button>
+      <div class="submit">
+        <button id="long-call-submit-button">Submit</button>
+      </div>
       <p>
         <input id="long-call-timeout" type="number" min="1" style="width:250px" placeholder="Enter timeout in seconds (optional)"></input>
       </p>
@@ -64,9 +68,11 @@
           <a target=_blank href="https://github.com/dchampion/framework/wiki/Web-Application-Framework#identity-and-access-management">this link</a>.
         </p>
       </h3>
-      <button class="reg-auth-div-button" data-div="reg-auth-login">Log in</button>
-      <button class="reg-auth-div-button" data-div="reg-auth-register">Register</button>
-      <div class="reg-auth-top" id="reg-auth-login">
+      <div class="tabs">
+        <button class="reg-auth-div-button" id="default-open" data-div="reg-auth-login">Log in</button>
+        <button class="reg-auth-div-button" data-div="reg-auth-register">Register</button>
+      </div>
+      <div class="top-reg-auth" id="reg-auth-login">
           <form id="reg-auth-login-form" action="/users/authenticate" method="post">
             <div>
               <label for="login-uname">Username:</label><br>
@@ -74,13 +80,13 @@
               <label for="login-password">Password:</label><br>
               <input type="password" id="login-password" name="password" required="true"><br>
             </div>
-            <div>
+            <div class="submit">
               <button type="submit">Submit</button>
             </div>
             <div class="response-container" id="login-response-container"></div>
           </form>
         </div>
-        <div class="reg-auth-top" id="reg-auth-register">
+        <div class="top-reg-auth" id="reg-auth-register">
           <form id="reg-auth-registration-form" action="/users/register" method="post">
             <div>
               <label for="reg-fname">First name:</label><br>
@@ -94,12 +100,12 @@
               <label for="reg-confirm-password">Confirm password:</label><br>
               <input type="password" id="reg-confirm-password" name="confirm-password" required="true" minlength="8" maxlength="64">
             </div>
-            <div>
+            <div class="submit">
               <button type="submit">Submit</button>
             </div>
           </form>
         </div>
-      <div class="response-container" id="reg-auth-response-container"></div>
+      <div class="response-container" id="reg-response-container"></div>
     </div>
   </body>
 </html>

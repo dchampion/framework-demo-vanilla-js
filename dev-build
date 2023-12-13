@@ -1,6 +1,0 @@
-#!/bin/sh
-if [ "$1" == "client" ]; then
-  cd client && ng build && cd ..
-fi
-./mvnw -pl server clean install
-java -jar server/target/server-1.0.0.jar

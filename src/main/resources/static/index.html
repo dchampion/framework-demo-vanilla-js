@@ -28,15 +28,15 @@
           If you enter a timeout value less than 10, the server will respond that the process timed<br>
           out before it could be completed, and the client will stop polling. Otherwise, if no timeout<br>
           is entered, the default value of 60 seconds will be used, giving the server ample time to<br>
-          complete the request. (To better observe the interaction between client and server, use<br>
-          the network view in your browser's developer tools.)
-        <p>
-          To see what's going on in the data tier, log in to the <a target=_blank href="http://localhost:8080/h2-console">in-memory database</a>
-          (no password required).
+          complete the request. To observe the details of the interaction between client and server,<br>
+          use the network view in your browser's developer tools.
         </p>
         <p>
           To learn more about this feature, you can read about it at
           <a target=_blank href="https://github.com/dchampion/framework/wiki/Web-Application-Framework#long-running-operation-with-polling">this link</a>.
+          To see what's going<br>
+          on in the data tier, log in to the <a target=_blank href="http://localhost:8080/h2-console">in-memory database</a>
+          (no password required).
         </p>
       </h3>
       <div class="submit">
@@ -51,21 +51,20 @@
       <h1>User Registration and Authentication</h1>
       <h3>
         <p>
-          Submit a username and password to authenticate an existing user, or press the Register<br>
-          button to create a new one.
+          Submit a username and password to authenticate an existing user, or click the Register<br>
+          tab to create a new one.
         </p>
         <p>
-          On registration of a new user, the server will reject a password proposal based on two<br>
-          criteria: First, the password must be at least 8 characters in length (and no more than<br>
-          64). Second, the password must not have previously appeared in a data breach.
-        </p>
-        <p>
-          To see what's going on in the data tier, log in to the <a target=_blank href="http://localhost:8080/h2-console">in-memory database</a>
-          (no password required).
+          On registration of a new user, the server will reject a password proposal unless two<br>
+          criteria are met: First, the password must be at least 8 characters in length (and no more<br>
+          than 64). Second, the password must not have previously appeared in a data breach.
         </p>
         <p>
           To learn more about this feature, you can read about it at
           <a target=_blank href="https://github.com/dchampion/framework/wiki/Web-Application-Framework#identity-and-access-management">this link</a>.
+          To see what's going<br>
+          on in the data tier, log in to the <a target=_blank href="http://localhost:8080/h2-console">in-memory database</a>
+          (no password required).
         </p>
       </h3>
       <div class="tabs">

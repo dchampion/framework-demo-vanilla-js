@@ -32,7 +32,7 @@ document.getElementById('long-call-submit-button').onclick = function() {
 
 document.getElementById('reg-auth-registration-form').addEventListener("submit", async (e) => {
     e.preventDefault();
-    const responseContainer = document.getElementById('reg-response-container');
+    const responseContainer = document.getElementById('reg-auth-response-container');
     const password = document.getElementById('reg-password').value;
     const confirmPassword = document.getElementById('reg-confirm-password').value;
     if (password !== confirmPassword) {
@@ -57,7 +57,7 @@ document.getElementById('reg-password').addEventListener("focusout", async (even
 
 document.getElementById('reg-auth-login-form').addEventListener("submit", async (e) => {
     e.preventDefault();
-    const responseContainer = document.getElementById('login-response-container');
+    const responseContainer = document.getElementById('reg-auth-response-container');
     const response = await fetchResponse(e);
     if (!response.ok) {
         responseContainer.innerHTML = `<b>${await response.text()}</b>`;

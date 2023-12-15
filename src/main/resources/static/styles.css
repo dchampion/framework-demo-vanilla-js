@@ -1,37 +1,29 @@
-/* Global Styles */
+/* All div classes with prefix "top", i.e., top-level divs for the SPA.
+ */
 [class*="top"] {
+  /* Hide by default. */
   display: none;
   padding: 6px 12px;
   border: 1px solid #ccc;
   border-top: none;
+  /* Animation for tab divs. */
   animation: fadeEffect 1s;
 }
 
+/* Animation for tab divs. */
 @keyframes fadeEffect {
   from {opacity: 0;}
   to {opacity: 1;}
 }
 
-.top {
-  display: none;
-}
-
-#long-call {
-  display: block;
-}
-
-#reg-auth-login {
-  display: block;
-}
-
-/* Style the tab */
+/* Style the tabs */
 .tabs {
   overflow: hidden;
   border: 1px solid #ccc;
   background-color: #f1f1f1;
 }
 
-/* Style the buttons that are used to open the tab content */
+/* Style the buttons that are used to open the tab content. */
 .tabs button {
   color: #369;
   font-family: Arial, Helvetica, sans-serif;
@@ -45,12 +37,12 @@
   transition: 0.3s;
 }
 
-/* Change background color of buttons on hover */
+/* Change background color of buttons on hover. */
 .tabs button:hover {
   background-color: #ddd;
 }
 
-/* Create an active/current tablink class */
+/* Create an active/current tablink class. */
 .tabs button.active {
   background-color: #ccc;
 }
@@ -60,6 +52,7 @@ h1 {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 250%;
 }
+
 h2, h3 {
   color: #444;
   font-family: Arial, Helvetica, sans-serif;
@@ -69,6 +62,7 @@ h2, h3 {
 body {
   margin: 2em;
 }
+
 body, input[text], button {
   color: #333;
   font-family: Cambria, Georgia;
@@ -89,9 +83,11 @@ a {
   cursor: pointer;
   cursor: hand;
 }
+
 .submit button:hover {
   background-color: #cfd8dc;
 }
+
 .submit button:disabled {
   background-color: #eee;
   color: #aaa;
@@ -104,7 +100,7 @@ a {
   display: inline-block;
 }
 
-/* Navigation link styles */
+/* Navigation link styles. */
 nav a {
   padding: 5px 10px;
   text-decoration: none;
@@ -113,19 +109,22 @@ nav a {
   display: inline-block;
   background-color: #eee;
   border-radius: 4px;
+
 }
 nav a:visited, a:link {
   color: #607D8B;
 }
+
 nav a:hover {
   color: #039be5;
   background-color: #CFD8DC;
 }
+
 nav a.active {
   color: #039be5;
 }
 
-/* everywhere else */
+/* Everything else. */
 * {
   font-family: Arial, Helvetica, sans-serif;
 }

@@ -73,17 +73,21 @@ async function longCallSubmit(value) {
         options['body'] = `{"timeout":${value}}`;
     }
 
-    // Submit the long-running task to the server.
-    const response = await fetch('http://localhost:8080/long-call/submit', options);
-    if (!response.ok) {
-        // Something went wrong.
-        task_status = response.headers.get('task-status');
-        document.getElementById('long-call-response-container').innerHTML += 
-            `<b>Status code: ${response.status}; Task status: ${task_status}</b>`;
-    } else {
-        // Task was submitted successfully; start polling.
-        document.getElementById('long-call-response-container').innerHTML = `<b>Task submitted</b><br>`;
-        poll(response.headers.get('task-id'), 1);
+    try {
+        // Submit the long-running task to the server.
+        const response = await fetch('http://localhost:8080/long-call/submit', options);
+        if (!response.ok) {
+            // Something went wrong.
+            task_status = response.headers.get('task-status');
+            document.getElementById('long-call-response-container').innerHTML +=
+                `<b>Status code: ${response.status}; Task status: ${task_status}</b>`;
+        } else {
+            // Task was submitted successfully; start polling.
+            document.getElementById('long-call-response-container').innerHTML = `<b>Task submitted</b><br>`;
+            poll(response.headers.get('task-id'), 1);
+        }
+    } catch (error) {
+        document.getElementById('long-call-response-container').innerHTML = `<b>${error}</b>`;
     }
 }
 
@@ -123,7 +127,6 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-
 // Form button that submits user information/credentials for registration.
 document.getElementById('reg-auth-registration-form').addEventListener("submit", async (e) => {
     // Eat the default form-submit behavior.
@@ -145,8 +148,12 @@ document.getElementById('reg-auth-registration-form').addEventListener("submit",
 
     // All is good.
     } else {
-        const response = await fetchResponse(e);
-        responseContainer.innerHTML = `<b>${await response.text()}</b>`
+        try {
+            const response = await fetchResponse(e);
+            responseContainer.innerHTML = `<b>${await response.text()}</b>`;
+        } catch (error) {
+            responseContainer.innerHTML = `<b>${error}</b>`
+        }
     }
 });
 
@@ -162,8 +169,13 @@ document.getElementById('reg-password').addEventListener("focusout", async (even
         method: 'POST',
         body: event.currentTarget.value
     }
-    response = await fetch('http://localhost:8080/users/is-pw-leaked', options);
-    leakedMsg = await response.text();
+    try {
+        response = await fetch('http://localhost:8080/users/is-pw-leaked', options);
+        leakedMsg = await response.text();
+    } catch (error) {
+        // Fail silently here.
+        console.warn(`${error}: Unable to get leaked status on focusout`);
+    }
 });
 
 // Login form handler.
@@ -172,28 +184,33 @@ document.getElementById('reg-auth-login-form').addEventListener("submit", async 
     e.preventDefault();
 
     const responseContainer = document.getElementById('reg-auth-response-container');
-    const response = await fetchResponse(e);
-    if (!response.ok) {
-        // Something went wrong.
-        responseContainer.innerHTML = `<b>${await response.text()}</b>`;
-    } else {
-        // Login successful.
-        let asJson = await response.json();
-        let msg = `Hello, ${asJson['firstName']} ${asJson['lastName']}; you are logged in as ${asJson['username']}`
-        if (response.headers.get('Password-Leaked') === 'true') {
-            // Login still successful. However, the user's password has since been
-            // leaked in a data breach. Warn the user to change it.
-            msg +=
-            '.<p>The password you are using on this site has previously<br>' +
-            'appeared in a data breach of another site. THIS IS NOT<br>' +
-            'RELATED TO A SECURITY INCIDENT ON THIS SITE.<br>' +
-            'However, the fact that this password has previously<br>' +
-            'appeared elsewhere puts this account at risk. You<br>' +
-            'should consider changing your password on this<br>' +
-            'site, as well as any other site on which you currently<br>' +
-            'use this password.';
+
+    try {
+        const response = await fetchResponse(e);
+        if (!response.ok) {
+            // Something went wrong.
+            responseContainer.innerHTML = `<b>${await response.text()}</b>`;
+        } else {
+            // Login successful.
+            let asJson = await response.json();
+            let msg = `Hello, ${asJson['firstName']} ${asJson['lastName']}; you logged in successfully as ${asJson['username']}`
+            if (response.headers.get('Password-Leaked') === 'true') {
+                // Login still successful. However, the user's password has since been
+                // leaked in a data breach. Warn the user to change it.
+                msg +=
+                '.<p>The password you are using on this site has previously<br>' +
+                'appeared in a data breach of another site. THIS IS NOT<br>' +
+                'RELATED TO A SECURITY INCIDENT ON THIS SITE.<br>' +
+                'However, the fact that this password has previously<br>' +
+                'appeared elsewhere puts this account at risk. You<br>' +
+                'should consider changing your password on this<br>' +
+                'site, as well as any other site on which you currently<br>' +
+                'use this password.';
+            }
+            responseContainer.innerHTML = `<b>${msg}</b>`;
         }
-        responseContainer.innerHTML = `<b>${msg}</b>`;
+    } catch (error) {
+        responseContainer.innerHTML = `<b>${error}</b>`;
     }
 });
 
